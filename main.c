@@ -1,30 +1,30 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "neural_net.h"
 
-int parse_param(int value){
+int check_param(int value)
+{
 
-  if (value)
-  { 
-    return 0;
-  }
-  
-  printf("Overuji vstupni soubory...\n");
-
-  return 1;
-}
-
-int main(void){
-
-  if (parse_param(1))
+  if (value != 3)
   {
     printf("Chyba...\n");
     return 1;
   }
+  
+  printf("Overuji vstupni soubory...\n");
+
+  return 0;
+}
+
+int main(int argc, char *argv[])
+{
+
+  if (check_param(argc)) exit(0);
 
   printf("Spustim program...\n");
 
-  run();
+  run(argv[1], argv[2]);
 
   return 0;
 }
