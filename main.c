@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
 
   if (check_param(argc)) exit(0);
 
+
   printf("Spustim program...\n");
 
   run(argv[1], argv[2]);

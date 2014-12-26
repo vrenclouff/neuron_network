@@ -1,7 +1,6 @@
-# Jméno přeloženého programu
+
 program=neural_net
 
-# Seznam objektových souborů použijeme na dvou místech.
 OBJ= neuron.o neural_net.o main.o
 
 # Míra optimalizace překladače gcc

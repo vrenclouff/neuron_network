@@ -2,25 +2,44 @@
 #define _NEURON_H
 
 
-typedef struct edge{
-  float weight;
-  unsigned index;
-  struct edge *next;
-}edge;
-
 typedef struct neuron{
- unsigned index;
+ unsigned int index;
  float activation;
  float cons;
- edge *edge;
+ struct dynEdge *edges;
  struct neuron *next; 
 }neuron;
 
+typedef struct edge{
+  float weight;
+  neuron *from;
+  struct edge *next;
+}edge;
 
-void push_neuron(neuron *root, neuron *val);
-void free_neuron(neuron *root);
+typedef struct dynEdge{
+  edge *first;
+  edge *last;
+  unsigned int size;
+}dynEdge;
 
-void push_edge(edge *root, edge *val);
-void free_edge(edge *root);
+typedef struct dynNeuron{
+  neuron *first;
+  neuron *last;
+  neuron *actual;
+  unsigned int size;
+}dynNeuron;
+
+typedef struct layers{
+  dynNeuron **items;
+  unsigned int size;
+  unsigned int item_size;
+}layers;
+
+layers *create_layers(unsigned int size);
+int push_edge(layers *root, unsigned int nm, unsigned int index_from, unsigned int index_to, float weight);
+int push_neuron(layers *root, unsigned int nm, unsigned int index, float cons);
+neuron *find_neuron(layers *root, unsigned int nm, unsigned int index);
+int reset_actual(layers *root, unsigned int nm);
+int get_max_activation_class(layers *root);
 
 #endif
