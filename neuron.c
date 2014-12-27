@@ -175,29 +175,38 @@ int get_max_activation_class(layers *root)
 
 void free_all(layers **root)
 {
-  int i;
+  int i, j;
+  neuron *neuron_tmp;
 
   if (!*root) return;
   
   for (i = 0; i < (*root) -> size; i++)
   { 
-    reset_actual(*root, i);
-    while(!(*root) -> items[i].first)
+    for (j = 0; j < (*root) -> items[i].size; j++)
     {
-      (*root) -> items[i].first -> edges -> last = (*root) -> items[i].first -> edges -> first;
-      while(!(*root) -> items[i].first -> edges -> first)
-      {
-        (*root) -> items[i].first -> edges -> last = (*root) -> items[i].first -> edges -> first -> next;
-        free((*root) -> items[i].first -> edges -> first);
-        (*root) -> items[i].first -> edges -> first = (*root) -> items[i].first -> edges -> last;
-      }
-
-      free((*root) -> items[i].first -> edges);
-      (*root) -> items[i].actual = (*root) -> items[i].first -> next;
+      neuron_tmp = (*root) -> items[i].first -> next;
+      free_neuron((*root) -> items[i].first);
       free((*root) -> items[i].first);
-      (*root) -> items[i].first = (*root) -> items[i].actual;
+      (*root) -> items[i].first = neuron_tmp;
     }
   }
   free((*root) -> items);
-  free(root);
+  free(*root);
+  *root = NULL;
+}
+
+int free_neuron(neuron *ner)
+{
+  int i;
+  edge *edge_tmp;
+
+  for (i = 0; i < ner -> edges -> size; i++)
+  {
+    edge_tmp = ner -> edges -> first -> next;
+    free(ner -> edges -> first);
+    ner -> edges -> first = edge_tmp;
+  }
+  free(ner -> edges);
+
+  return 1;
 }

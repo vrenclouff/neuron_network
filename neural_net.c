@@ -156,9 +156,9 @@ void run(char *neuron_network, char *data)
 { 
   int class;
 
-  if (!neuron_network || !data) exit(0);
+  if (!neuron_network || !data) exit(1);
 
-  if (load_file(neuron_network, data)) exit(0);
+  if (load_file(neuron_network, data)) exit(2);
 
   calculate_activations();
 
@@ -166,6 +166,6 @@ void run(char *neuron_network, char *data)
   class = get_max_activation_class(root);
   printf("%d\n", class);
 
-//  free_all(&root);
+  free_all(&root);
 
 }
