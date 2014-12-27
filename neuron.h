@@ -30,7 +30,7 @@ typedef struct dynNeuron{
 }dynNeuron;
 
 typedef struct layers{
-  dynNeuron **items;
+  dynNeuron *items;
   unsigned int size;
   unsigned int item_size;
 }layers;
@@ -39,7 +39,8 @@ layers *create_layers(unsigned int size);
 int push_edge(layers *root, unsigned int nm, unsigned int index_from, unsigned int index_to, float weight);
 int push_neuron(layers *root, unsigned int nm, unsigned int index, float cons);
 neuron *find_neuron(layers *root, unsigned int nm, unsigned int index);
-int reset_actual(layers *root, unsigned int nm);
+void reset_actual(layers *root, unsigned int nm);
 int get_max_activation_class(layers *root);
+void free_all(layers **root);
 
 #endif

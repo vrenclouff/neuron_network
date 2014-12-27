@@ -23,7 +23,7 @@ layers *create_layers(unsigned int size)
 
   for ( i = 0; i < size; i++)
   {
-    root -> items[i] -> size = 0;
+    root -> items[i].size = 0;
   }
 
   return root;
@@ -34,8 +34,8 @@ layers *create_layers(unsigned int size)
 int push_neuron(layers *root, unsigned int nm, unsigned int index, float cons)
 {
   neuron *tmp;
-  
-  if (!root || !nm || !index || !cons) return 0;
+ 
+  if (!root || nm < 0 || index < 0) return 0;
   if (root -> size <= nm) return 0;
 
   tmp = (neuron *) malloc (sizeof(neuron));
@@ -55,24 +55,25 @@ int push_neuron(layers *root, unsigned int nm, unsigned int index, float cons)
 
   tmp -> edges -> size = 0;
 
-  if (root -> items[nm] -> size != 0)
+  if (root -> items[nm].size != 0)
   {
-    root -> items[nm] -> last -> next = tmp;
+    root -> items[nm].last -> next = tmp;
   }else
   {
-    root -> items[nm] -> first = tmp;
-    root -> items[nm] -> actual = tmp;
+    root -> items[nm].first = tmp;
+    root -> items[nm].actual = tmp;
   }
 
-  root -> items[nm] -> last = tmp;
-  root -> items[nm] -> size++;
-  
+  root -> items[nm].last = tmp;
+  root -> items[nm].size++;
+ 
   return 1;
 }
 
 int push_edge(layers *root, unsigned int nm, unsigned int index_from, unsigned int index_to, float weight)
 {
-  int i;
+  int i, max;
+  unsigned int ind;
   neuron *from;
   neuron *to;
   edge *tmp_edge;
@@ -82,15 +83,17 @@ int push_edge(layers *root, unsigned int nm, unsigned int index_from, unsigned i
   if (!from) return 0;
 
   nm += 1;
-  if (root -> items[nm] -> size <= index_to)
+
+  if (index_to < root -> items[nm].size)
   {
     to = find_neuron(root, nm, index_to);
     if (!to) return 0;
-
   }else
   {
-    if (push_neuron( root, nm, index_to, 0.0)) return 0;
-    to = root -> items[nm] -> last;
+    max = index_to - root -> items[nm].size;
+    ind = root -> items[nm].size;
+    for (i = 0; i <= max; i++) push_neuron( root, nm, (ind + i), 0.0);
+    to = root -> items[nm].last;
   }
 
   tmp_edge = (edge *) malloc (sizeof(edge));
@@ -118,21 +121,20 @@ neuron *find_neuron(layers *root, unsigned int nm, unsigned int index)
 {
   int i;
 
-  for(i = root -> items[nm] -> actual -> index; i <= root -> items[nm] -> size; i++)
+  for(i = root -> items[nm].actual -> index; i < root -> items[nm].size; i++)
   {
-    if (root -> items[nm] -> actual -> index == index)
+    if (root -> items[nm].actual -> index == index)
     {
-      return root -> items[nm] -> actual;
+      return root -> items[nm].actual;
     }
-    root -> items[nm] -> actual = root -> items[nm] -> actual -> next;
+    root -> items[nm].actual = root -> items[nm].actual -> next;
   }
   return NULL;
 }
 
-int reset_actual(layers *root, unsigned int nm)
+void reset_actual(layers *root, unsigned int nm)
 {
-  root -> items[nm] -> actual = root -> items[nm] -> first;
-  return 1;
+  root -> items[nm].actual = root -> items[nm].first;
 }
 
 int get_max_activation_class(layers *root)
@@ -143,9 +145,9 @@ int get_max_activation_class(layers *root)
 
   max = FLT_MIN;
   ind = root -> size -1;
-  tmp = root -> items[ind] -> first;
+  tmp = root -> items[ind].first;
 
-  for (i = 0; i < root -> items[ind] -> size; i++)
+  for (i = 0; i < root -> items[ind].size; i++)
   {
     if (max < tmp -> activation)
     {
@@ -155,4 +157,33 @@ int get_max_activation_class(layers *root)
   }
 
   return class;
+}
+
+void free_all(layers **root)
+{
+  int i;
+
+  if (!*root) return;
+  
+  for (i = 0; i < (*root) -> size; i++)
+  { 
+    reset_actual(*root, i);
+    while(!(*root) -> items[i].first)
+    {
+      (*root) -> items[i].first -> edges -> last = (*root) -> items[i].first -> edges -> first;
+      while(!(*root) -> items[i].first -> edges -> first)
+      {
+        (*root) -> items[i].first -> edges -> last = (*root) -> items[i].first -> edges -> first -> next;
+        free((*root) -> items[i].first -> edges -> first);
+        (*root) -> items[i].first -> edges -> first = (*root) -> items[i].first -> edges -> last;
+      }
+
+      free((*root) -> items[i].first -> edges);
+      (*root) -> items[i].actual = (*root) -> items[i].first -> next;
+      free((*root) -> items[i].first);
+      (*root) -> items[i].first = (*root) -> items[i].actual;
+    }
+  }
+  free((*root) -> items);
+  free(root);
 }
