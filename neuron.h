@@ -42,5 +42,6 @@ neuron *find_neuron(layers *root, unsigned int nm, unsigned int index);
 void reset_actual(layers *root, unsigned int nm);
 int get_max_activation_class(layers *root);
 void free_all(layers **root);
+int add_neuron_cons(layers *root, unsigned int nm, unsigned int index, float cons);
 
 #endif

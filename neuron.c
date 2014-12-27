@@ -49,8 +49,8 @@ int push_neuron(layers *root, unsigned int nm, unsigned int index, float cons)
   }
 
   tmp -> next = NULL;
-  tmp -> activation = 0;
-  tmp -> cons = cons;
+  tmp -> activation = cons;
+//  tmp -> cons = cons;
   tmp -> index = index;
 
   tmp -> edges -> size = 0;
@@ -114,6 +114,18 @@ int push_edge(layers *root, unsigned int nm, unsigned int index_from, unsigned i
   
   to -> edges -> last = tmp_edge;
   to -> edges -> size++;
+  return 1;
+}
+
+int add_neuron_cons(layers *root, unsigned int nm, unsigned int index, float cons)
+{
+  neuron *tmp;
+
+  tmp = find_neuron(root, nm, index);
+  if (!tmp) return 0;
+
+  tmp -> activation = cons;
+
   return 1;
 }
 
