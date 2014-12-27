@@ -9,10 +9,9 @@ int check_param(int value)
 
   if (value != 3)
   {
-    printf("Chyba...\n");
+    printf("You have entered the wrong parameters. Run the program as:\nneural_net.exe <file with neural network> <file with number>\n");
     return 1;
   }
-  
 
   return 0;
 }
@@ -20,13 +19,12 @@ int check_param(int value)
 int main(int argc, char *argv[])
 {
 
- // if (check_param(argc)) exit(0);
+  if (check_param(argc)) exit(1);
 
   clock_t t1, t2;
   t1 = clock();
 
-  run("neuronova_sit.txt", "vstupy/0.dat");
-//  run(argv[1], argv[2]);
+  run(argv[1], argv[2]);
   
   t2 = clock();
   printf("Proces bezel %f sekund\n", ((double) (t2-t1))/CLOCKS_PER_SEC); 

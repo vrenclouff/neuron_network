@@ -1,5 +1,5 @@
 
-program=neural_net
+program=neural_net.exe
 CC = gcc
 OBJ= neuron.o neural_net.o main.o
 OPT=-O2
