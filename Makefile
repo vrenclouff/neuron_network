@@ -1,23 +1,18 @@
 
 program=neural_net
-
+CC = gcc
 OBJ= neuron.o neural_net.o main.o
-
-# Míra optimalizace překladače gcc
 OPT=-O2
 
-#clean:
-#	rm -f *.o ${OBJ}
-
 ${program}: ${OBJ}
-	gcc ${OBJ} -o ${program} ${OPT}
+	${CC} ${OBJ} -o ${program} ${OPT} -lm
 
 	
 neuron.o: neuron.c
-	gcc neuron.c -c ${OPT}
+	${CC} neuron.c -c ${OPT} -lm
 
 neural_net.o: neural_net.c
-	gcc neural_net.c -c ${OPT}
+	${CC} neural_net.c -c ${OPT} -lm
 
 main.o: main.c neural_net.h
-	gcc main.c -c ${OPT}
+	${CC} main.c -c ${OPT} -lm

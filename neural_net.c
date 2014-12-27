@@ -1,16 +1,50 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <math.h>
 
 #include "neuron.h"
 #include "neural_net.h"
 
 layers *root;
 
-float count_activation()
+float count_activation(neuron *ner)
 {
+  int i;
+  float activation;
+  edge *edge_tmp;
 
-  return 5.53;
+  activation = ner -> activation;
+  if (ner -> edges -> size != 0)
+  {
+    edge_tmp = ner -> edges -> first;
+    for (i = 0; i < ner -> edges -> size; i++)
+    {
+      activation += (edge_tmp -> from -> activation * edge_tmp -> weight);
+      edge_tmp = edge_tmp -> next;
+    }
+    activation = tanh(activation);
+  }
+
+  return activation;
+}
+
+int calculate_activations()
+{
+  int i, j, k;
+  neuron *neuron_tmp;
+  float activation;
+  for (i = 1; i < root -> size; i++)
+  {
+    neuron_tmp = root -> items[i].first;
+    for (j = 0; j < root -> items[i].size; j++)
+    {
+      activation = count_activation(neuron_tmp);
+      neuron_tmp -> activation = activation;
+      neuron_tmp = neuron_tmp -> next;
+    }
+  }
+  return 1;
 }
 
 int load_file(char *neuron_network, char *data)
@@ -19,6 +53,8 @@ int load_file(char *neuron_network, char *data)
   unsigned int count_layers;
   int layer, index_from, index_to, index_pom, i;
   float weight;
+
+  if (!neuron_network || !data) return 0;
 
   fr = fopen(neuron_network, "r");
   if (!fr) return 0;         
@@ -31,7 +67,7 @@ int load_file(char *neuron_network, char *data)
 
   if (!load_input_data(data)) return 0;
 
-  reset_actual(root, 0);
+//  reset_actual(root, 0);
   for (i = 1; i < count_layers; i++)
   {
     read_edges(fr);
@@ -53,6 +89,8 @@ int read_cons(FILE *frr)
   int layer, index;
   float cons;
 
+  if (!frr) return 0;
+
   fscanf(frr,"b hodnoty vrstvy %d:\n", &layer);
   
   do{
@@ -69,6 +107,8 @@ int read_edges(FILE *frr)
 {
   int layer, index_from, index_to, index_pom;
   float weight;
+
+  if (!frr) return 0;
 
   fscanf(frr, "W hodnoty vrstvy %d:\n", &layer);
   
@@ -96,6 +136,8 @@ int load_input_data(char *file)
   int i, length;
   float nm;
 
+  if (!file) return 0;
+
   fb = fopen(file, "rb");
   if (!fb) return 0;
 
@@ -114,15 +156,16 @@ void run(char *neuron_network, char *data)
 { 
   int class;
 
-  if (load_file(neuron_network, data))
-  {
-    printf("Data nebyla nactena\n"); 
-    exit(0);
-  }
-/*  
+  if (!neuron_network || !data) exit(0);
+
+  if (load_file(neuron_network, data)) exit(0);
+
+  calculate_activations();
+
+  
   class = get_max_activation_class(root);
   printf("%d\n", class);
 
-  free_all(&root);
-*/
+//  free_all(&root);
+
 }

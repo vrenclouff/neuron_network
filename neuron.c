@@ -161,11 +161,13 @@ int get_max_activation_class(layers *root)
 
   for (i = 0; i < root -> items[ind].size; i++)
   {
+//    printf("%2.10f\n", tmp -> activation);
     if (max < tmp -> activation)
     {
       class = tmp -> index;
-      tmp = tmp -> next;
+      max = tmp -> activation;
     }
+    tmp = tmp -> next;
   }
 
   return class;
