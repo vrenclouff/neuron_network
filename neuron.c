@@ -27,7 +27,6 @@ layers *create_layers(unsigned int size)
   if (!root -> items) return NULL;
   
   root -> size = size;
-  root -> item_size = sizeof(dynNeuron);
 
   for ( i = 0; i < size; i++)
   {

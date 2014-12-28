@@ -31,7 +31,6 @@ typedef struct dynNeuron{
 typedef struct layers{
   dynNeuron *items;
   unsigned int size;
-  unsigned int item_size;
 }layers;
 
 layers *create_layers(unsigned int size);
