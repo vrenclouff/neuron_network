@@ -5,7 +5,6 @@
 typedef struct neuron{
  unsigned int index;
  float activation;
- float cons;
  struct dynEdge *edges;
  struct neuron *next; 
 }neuron;

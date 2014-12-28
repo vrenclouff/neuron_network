@@ -1,9 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "neural_net.h"
 
+
+/*
+ ---------------------------------------------------------
+  Kontrola vstupnich parametru
+
+  @param value - pocet parametru
+  @return 0 - parametry jsou v poradku 
+ ---------------------------------------------------------
+*/
 int check_param(int value)
 {
 
@@ -16,18 +24,21 @@ int check_param(int value)
   return 0;
 }
 
+/*
+ ---------------------------------------------------------
+  Funkce main pro spusteni programu
+
+  @param argc - pocet parametru
+  @param argv - nazvy parametru
+  @return 0 - program probehl spravne
+ ---------------------------------------------------------
+*/
 int main(int argc, char *argv[])
 {
 
   if (check_param(argc)) exit(1);
 
-  clock_t t1, t2;
-  t1 = clock();
-
   run(argv[1], argv[2]);
   
-  t2 = clock();
-  printf("Proces bezel %f sekund\n", ((double) (t2-t1))/CLOCKS_PER_SEC); 
-
   return 0;
 }

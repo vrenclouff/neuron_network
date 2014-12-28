@@ -4,6 +4,14 @@
 #include "neuron.h"
 
 
+/*
+ ---------------------------------------------------------
+  Vytvori strukturu pro dany pocet vrstev
+
+  @param size - pocet vrstev
+  @return root - vytvorena struktura
+ ---------------------------------------------------------
+*/
 layers *create_layers(unsigned int size)
 {
   layers *root;
@@ -30,7 +38,17 @@ layers *create_layers(unsigned int size)
 
 }
 
+/*
+ ---------------------------------------------------------
+  Prida neuron na dane vrstve
 
+  @param root - ukazatel na pocatek
+  @param nm - vrstva
+  @param index - index noveho neuronu
+  @param cons - aktivace noveho neuronu
+  @return 1 - vlozeni probehlo uspesne
+ ---------------------------------------------------------
+*/
 int push_neuron(layers *root, unsigned int nm, unsigned int index, float cons)
 {
   neuron *tmp;
@@ -50,7 +68,6 @@ int push_neuron(layers *root, unsigned int nm, unsigned int index, float cons)
 
   tmp -> next = NULL;
   tmp -> activation = cons;
-//  tmp -> cons = cons;
   tmp -> index = index;
 
   tmp -> edges -> size = 0;
@@ -70,6 +87,18 @@ int push_neuron(layers *root, unsigned int nm, unsigned int index, float cons)
   return 1;
 }
 
+/*
+ ---------------------------------------------------------
+  Prida hranu neuronu
+
+  @param root - ukazatel na pocatek
+  @param nm - vrstva
+  @param index_from - index neuronu odkud jde hrana
+  @param index_to - index neuronu kam jde hrana
+  @param weight - vaha hrany
+  @return 1 - vlozeni probehlo uspesne
+ ---------------------------------------------------------
+*/
 int push_edge(layers *root, unsigned int nm, unsigned int index_from, unsigned int index_to, float weight)
 {
   int i, max;
@@ -84,6 +113,8 @@ int push_edge(layers *root, unsigned int nm, unsigned int index_from, unsigned i
 
   nm += 1;
 
+  /* Prijde-li neuron s vetsim indexem, nez ktery je ulozeny jako posledni,
+   * vytvori nove neurony  */
   if (index_to < root -> items[nm].size)
   {
     to = find_neuron(root, nm, index_to);
@@ -117,6 +148,17 @@ int push_edge(layers *root, unsigned int nm, unsigned int index_from, unsigned i
   return 1;
 }
 
+/*
+ ---------------------------------------------------------
+  Prida neuronum aktivace
+
+  @param root - ukazatel na pocatek
+  @param nm - vrstva
+  @param index - index neuronu pro vlozeni aktivace
+  @param cons - aktivace neuronu
+  @return 1 - pridani probehlo uspesne
+ ---------------------------------------------------------
+*/
 int add_neuron_cons(layers *root, unsigned int nm, unsigned int index, float cons)
 {
   neuron *tmp;
@@ -129,6 +171,17 @@ int add_neuron_cons(layers *root, unsigned int nm, unsigned int index, float con
   return 1;
 }
 
+/*
+ ---------------------------------------------------------
+  Najde neuron
+
+  @param root - ukazatel na pocatek
+  @param nm - vrstva
+  @param index - index hledaneho neuronu
+  @return hledany neuron
+  @return NULL - neuron nenalezen
+ ---------------------------------------------------------
+*/
 neuron *find_neuron(layers *root, unsigned int nm, unsigned int index)
 {
   int i;
@@ -144,11 +197,27 @@ neuron *find_neuron(layers *root, unsigned int nm, unsigned int index)
   return NULL;
 }
 
+/*
+ ---------------------------------------------------------
+  Inicializace aktualniho ukazatele na prvni pozici
+
+  @param root - ukazatel na pocatek
+  @param nm - vrstva
+ ---------------------------------------------------------
+*/
 void reset_actual(layers *root, unsigned int nm)
 {
   root -> items[nm].actual = root -> items[nm].first;
 }
 
+/*
+ ---------------------------------------------------------
+  Najde tridu s nejvetsi aktivaci ve vystupni vrstve
+
+  @param root - ukazatel na pocatek
+  @return class - index s nejvetsi aktivaci
+ ---------------------------------------------------------
+*/
 int get_max_activation_class(layers *root)
 {
   int ind, i, class;
@@ -161,7 +230,6 @@ int get_max_activation_class(layers *root)
 
   for (i = 0; i < root -> items[ind].size; i++)
   {
-//    printf("%2.10f\n", tmp -> activation);
     if (max < tmp -> activation)
     {
       class = tmp -> index;
@@ -173,6 +241,13 @@ int get_max_activation_class(layers *root)
   return class;
 }
 
+/*
+ ---------------------------------------------------------
+  Uvolni celou strukturu
+
+  @param root - ukazatel na ukazatel na pocatek
+ ---------------------------------------------------------
+*/
 void free_all(layers **root)
 {
   int i, j;
@@ -180,8 +255,10 @@ void free_all(layers **root)
 
   if (!*root) return;
   
+  /* uvolneni po vrstvach  */
   for (i = 0; i < (*root) -> size; i++)
   { 
+    /* uvolneni po neuronech ve vrstve  */
     for (j = 0; j < (*root) -> items[i].size; j++)
     {
       neuron_tmp = (*root) -> items[i].first -> next;
@@ -195,6 +272,14 @@ void free_all(layers **root)
   *root = NULL;
 }
 
+/* 
+ ---------------------------------------------------------
+  Uvolni hrany v neuronu
+
+  @param ner - neuron
+  @return 1 - uvolneni bylo uspesne
+ ---------------------------------------------------------
+*/
 int free_neuron(neuron *ner)
 {
   int i;
